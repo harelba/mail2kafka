@@ -57,7 +57,28 @@ var all = {
     clientID:     process.env.GOOGLE_ID || 'id',
     clientSecret: process.env.GOOGLE_SECRET || 'secret',
     callbackURL:  (process.env.DOMAIN || '') + '/auth/google/callback'
-  }
+  },
+
+  // Application config
+  // TODO should be moved out of here
+  smtpPort : 2526,
+  kafka : {
+	  zk : { 
+		       connectionString : "localhost:2181",
+		       sessionTimeout : 30000, 
+		       spinDelay : 1000 , 
+		       retries : 0 
+	       },
+	  outputTopic : 'test_2',
+	  consumerGroup : null,
+	  requireAcks : {
+		  acksRequired : 1,
+		  ackTimeoutMs : 200,
+		  noAckBatchSize : null,
+		  noAckBatchAge : null
+	  },
+	  partitionerType : 0
+  	}
 };
 
 // Export the config object based on the NODE_ENV

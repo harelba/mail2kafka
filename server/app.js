@@ -41,17 +41,36 @@ function startServer() {
     console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
   });
  
-  var zkOptions = { sessionTimeout : 30000, spinDelay : 1000, retries : 0 };
-  var noAckBatchOptions =  { noAckBatchSize: null, noAckBatchAge: null };
-  var kafkaClient = new kafka.Client("localhost:2181","mail2kafka_"+uuid.v4(),zkOptions,noAckBatchOptions);
-  var kafkaProducer = new kafka.HighLevelProducer(kafkaClient, { requireAcks : 1 , ackTimeoutMs : 200 , partitionerType : 0 });
+  var zkOptions = { 
+	  sessionTimeout : config.kafka.zk.sessionTimeout, 
+	  spinDelay : config.kafka.zk.spinDelay, 
+	  retries : config.kafka.zk.retries
+  };
+
+  var noAckBatchOptions =  { 
+	  noAckBatchSize: config.kafka.requireAcks.noAckBatchSize, 
+	  noAckBatchAge: config.kafka.requireAcks.noAckBatchAge 
+  };
+
+  if (config.kafka.clientId === null) {
+	  var kafkaClientId = "mail2kafka_" + uuid.v4();
+  }
+  else {
+	  var kafkaClientId = config.kafka.clientId;
+  }
+
+  var kafkaClient = new kafka.Client(config.kafka.zk.connectionString,kafkaClientId,zkOptions,noAckBatchOptions);
+  var kafkaProducer = new kafka.HighLevelProducer(kafkaClient, { 
+      requireAcks : config.kafka.requireAcks.acksRequired , 
+      ackTimeoutMs : config.kafka.requireAcks.ackTimeoutMs , 
+      partitionerType : config.kafka.partitionerType });
 
   kafkaProducer.on('ready',function () {
 	  logger.log('info','Kafka producer ready');
   });
 
   mailin.start({
-	          port : 2526,
+	          port : config.smtpPort,
 	          disableWebhook : true,
 	          requireAuthentication : false
   });
@@ -62,7 +81,7 @@ function startServer() {
 
 	var sm = JSON.stringify(m);
 	logger.log('info','going to send message: ' + sm);
-	var payloads = [ { topic : 'test_2' , messages : sm } ];
+	var payloads = [ { topic : config.kafka.outputTopic, messages : sm } ];
 	kafkaProducer.send(payloads,function (err,data) {
 		logger.info('Sent email to kafka ' + data);
 	});
