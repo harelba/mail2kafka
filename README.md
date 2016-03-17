@@ -1,15 +1,16 @@
 # mail2kafka
 
-This is a simple service which gets emails through SMTP, parsed them (using the great mailin module) and output a JSON containing the parsed data to a kafka topic.
-
+This is a simple service which gets emails through SMTP, parses them (using the great [mailin](http://mailin.io/) module) and outputs a JSON containing the parsed data to a kafka topic.
 
 # Running it
 Run ````npm install```` and ````grunt serve````. 
 
 "Production" deployment will be available later on. 
 
+Only kafka 0.8+ is supported.
+
 # Configuration
-Lies currently in ````server/config/environment/index.js````. Will be moved soon.
+Lies currently in ````server/config/environment/index.js````. Will be moved soon to a separate location.
 
 Configuration:
 ````
