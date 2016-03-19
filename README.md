@@ -9,6 +9,19 @@ Run ````npm install```` and ````grunt serve````.
 
 Only kafka 0.8+ is supported.
 
+# Generate emails from the command line
+You can use the ````generate-incoming-email```` script to send an email from the command line:
+
+````
+./generate-incoming-email -s "my subject" -f origin@email.com -t "destination@blah.com"
+
+or
+
+echo "this is my content" | ./generate-incoming-email ...
+
+Defaults exists for everything.
+````
+
 # Configuration
 Lies currently in ````server/config/environment/index.js````. Will be moved soon to a separate location.
 
